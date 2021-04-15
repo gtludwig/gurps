@@ -145,31 +145,19 @@ GURPS.PARSELINK_MAPPINGS = {
   IQ: 'attributes.IQ.value',
   HT: 'attributes.HT.value',
   WILL: 'attributes.WILL.value',
-  Will: 'attributes.WILL.value',
   PER: 'attributes.PER.value',
-  Per: 'attributes.PER.value',
-  Vision: 'vision',
   VISION: 'vision',
   FRIGHTCHECK: 'frightcheck',
-  Frightcheck: 'frightcheck',
-  'Fright check': 'frightcheck',
-  'Fright Check': 'frightcheck',
-  Hearing: 'hearing',
+  'FRIGHT CHECK': 'frightcheck',
   HEARING: 'hearing',
   TASTESMELL: 'tastesmell',
-  'Taste Smell': 'tastesmell',
   'TASTE SMELL': 'tastesmell',
   TASTE: 'tastesmell',
   SMELL: 'tastesmell',
-  Taste: 'tastesmell',
-  Smell: 'tastesmell',
   TOUCH: 'touch',
-  Touch: 'touch',
-  Dodge: 'currentdodge',
   DODGE: 'currentdodge',
   Parry: 'equippedparry',
   PARRY: 'equippedparry',
-  Block: 'equippedblock',
   BLOCK: 'equippedblock',
 }
 
@@ -845,6 +833,7 @@ GURPS.performAction = performAction
 function findSkillSpell(actor, sname) {
   var t
   if (!actor) return t
+  if (!!actor.data?.data?.additionalresources) actor = actor.data
   sname = '^' + sname.split('*').join('.*').replace(/\(/g, '\\(').replace(/\)/g, '\\)') // Make string into a RegEx pattern
   let best = 0
   recurselist(actor.data.skills, s => {
@@ -864,9 +853,25 @@ function findSkillSpell(actor, sname) {
 }
 GURPS.findSkillSpell = findSkillSpell
 
+function findAdDisad(actor, sname) {
+  var t
+  if (!actor) return t
+  if (!!actor.data?.data?.additionalresources) actor = actor.data
+  sname = '^' + sname.split('*').join('.*').replace(/\(/g, '\\(').replace(/\)/g, '\\)') // Make string into a RegEx pattern
+  recurselist(actor.data.ads, s => {
+    if (s.name.match(sname)) {
+      t = s
+    }
+  })
+  return t
+}
+GURPS.findAdDisad = findAdDisad
+
+
 function findAttack(actor, sname) {
   var t
   if (!actor) return t
+  if (!!actor.data?.data?.additionalresources) actor = actor.data
   sname = '^' + sname.split('*').join('.*').replace(/\(/g, '\\(').replace(/\)/g, '\\)') // Make string into a RegEx pattern
   t = actor.data.melee?.findInProperties(a => (a.name + (!!a.mode ? ' (' + a.mode + ')' : '')).match(sname))
   if (!t) t = actor.data.ranged?.findInProperties(a => (a.name + (!!a.mode ? ' (' + a.mode + ')' : '')).match(sname))
